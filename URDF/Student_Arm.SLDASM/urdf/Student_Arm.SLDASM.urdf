@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="Student_Arm.SLDASM">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="3.75969511847914E-08 -0.0794517403190993 -0.00262773702860451"
+        rpy="0 0 0" />
+      <mass
+        value="0.53383345184999" />
+      <inertia
+        ixx="0.00120475867367635"
+        ixy="1.27494390418467E-09"
+        ixz="2.59729358054216E-09"
+        iyy="0.00226030030514847"
+        iyz="4.04496125401711E-08"
+        izz="0.00118360373666522" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.898039215686275 0.898039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="J1">
+    <inertial>
+      <origin
+        xyz="7.6584E-17 -0.043917 -0.00015159"
+        rpy="0 0 0" />
+      <mass
+        value="0.50399" />
+      <inertia
+        ixx="0.00041937"
+        ixy="-1.0207E-18"
+        ixz="-6.3805E-13"
+        iyy="0.00072756"
+        iyz="1.1488E-07"
+        izz="0.00043326" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="J1" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="J2">
+    <inertial>
+      <origin
+        xyz="-0.010661 0.099658 -0.022583"
+        rpy="0 0 0" />
+      <mass
+        value="0.39279" />
+      <inertia
+        ixx="0.00039643"
+        ixy="3.0543E-06"
+        ixz="5.1939E-08"
+        iyy="0.00031097"
+        iyz="-5.3252E-09"
+        izz="0.00017315" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.94902 0.87451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J2"
+    type="revolute">
+    <origin
+      xyz="0.0221 0 0"
+      rpy="1.5708 1.0391 1.5708" />
+    <parent
+      link="J1" />
+    <child
+      link="J2" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="J3">
+    <inertial>
+      <origin
+        xyz="-5.4188E-06 -0.095818 0.018544"
+        rpy="0 0 0" />
+      <mass
+        value="0.20982" />
+      <inertia
+        ixx="0.00010657"
+        ixy="4.3119E-08"
+        ixz="8.3495E-10"
+        iyy="7.5396E-05"
+        iyz="-1.2745E-06"
+        izz="7.1513E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.94902 0.87451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J3"
+    type="continuous">
+    <origin
+      xyz="-0.06275 0.242 0"
+      rpy="-3.1416 0 1.8245" />
+    <parent
+      link="J2" />
+    <child
+      link="J3" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="J4">
+    <inertial>
+      <origin
+        xyz="0.00022019 0.0013133 -0.0013133"
+        rpy="0 0 0" />
+      <mass
+        value="0.060711" />
+      <inertia
+        ixx="1.2454E-05"
+        ixy="-2.8007E-08"
+        ixz="2.8007E-08"
+        iyy="1.0671E-05"
+        iyz="1.978E-06"
+        izz="1.0671E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.77647 0.75686 0.73725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J4"
+    type="continuous">
+    <origin
+      xyz="0 -0.23213 0.0221"
+      rpy="0.7854 1.5708 0" />
+    <parent
+      link="J3" />
+    <child
+      link="J4" />
+    <axis
+      xyz="0 0.70711 -0.70711" />
+  </joint>
+  <link
+    name="J5">
+    <inertial>
+      <origin
+        xyz="-0.019335 0.035163 7.2334E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.053474" />
+      <inertia
+        ixx="1.0022E-05"
+        ixy="-1.688E-06"
+        ixz="1.0669E-14"
+        iyy="9.0857E-06"
+        iyz="3.8078E-15"
+        izz="1.3557E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.94902 0.87451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J5"
+    type="continuous">
+    <origin
+      xyz="0 -0.012639 0.012639"
+      rpy="1.5708 0.80221 1.5708" />
+    <parent
+      link="J4" />
+    <child
+      link="J5" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="J6">
+    <inertial>
+      <origin
+        xyz="-0.0064673240335944 -0.00293644104444194 0.0472563360776681"
+        rpy="0 0 0" />
+      <mass
+        value="0.10498725932869" />
+      <inertia
+        ixx="1.33725101539202E-05"
+        ixy="-3.44362818758654E-06"
+        ixz="2.32769709578376E-07"
+        iyy="1.93402341638447E-05"
+        iyz="2.04901766859891E-07"
+        izz="2.19519821270149E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.949019607843137 0.874509803921569 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/J6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J6"
+    type="continuous">
+    <origin
+      xyz="-0.041089 0.03973 0"
+      rpy="1.5708 0.40912 -2.3394" />
+    <parent
+      link="J5" />
+    <child
+      link="J6" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="Gripper_Left">
+    <inertial>
+      <origin
+        xyz="-0.0435776349966507 0.0054585842211822 0.504829642372828"
+        rpy="0 0 0" />
+      <mass
+        value="0.0189723242002883" />
+      <inertia
+        ixx="9.09666378713769E-06"
+        ixy="-1.08307332825005E-06"
+        ixz="4.87220147818776E-06"
+        iyy="2.01383755676178E-05"
+        iyz="1.4188515926364E-06"
+        izz="1.28431013052015E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/Gripper_Left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.101960784313725 0.101960784313725 0.101960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/Gripper_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="GL"
+    type="prismatic">
+    <origin
+      xyz="-0.0010648 0.0024559 -0.41061"
+      rpy="0 0 1.9799" />
+    <parent
+      link="J6" />
+    <child
+      link="Gripper_Left" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="Gripper_Right">
+    <inertial>
+      <origin
+        xyz="0.00354141577881787 -0.0195206741241875 0.0346723650033463"
+        rpy="0 0 0" />
+      <mass
+        value="0.0189723242002881" />
+      <inertia
+        ixx="2.01383755676177E-05"
+        ixy="1.41885159263639E-06"
+        ixz="1.08307332825005E-06"
+        iyy="1.28431013052015E-05"
+        iyz="-4.87220147818762E-06"
+        izz="9.09666378713763E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/Gripper_Right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Student_Arm.SLDASM/meshes/Gripper_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="GR"
+    type="prismatic">
+    <origin
+      xyz="-0.021806 0.072917 0.0747"
+      rpy="-1.5708 0 -2.7325" />
+    <parent
+      link="J6" />
+    <child
+      link="Gripper_Right" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>
