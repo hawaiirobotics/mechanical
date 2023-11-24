@@ -1,3 +1,5 @@
 *.CWR
 !spec/*.CWR
 ~$*
+Kuna Arm/Joint Tool/venv/
+*.pyc
