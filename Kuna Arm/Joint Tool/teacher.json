@@ -1,20 +1,21 @@
 {
     "j2": {
-        "min": 145.0,
+        "min": 0.0,
         "def": 45.0,
-        "max": 0.0
+        "max": 145.0
     },
     "l23": {
         "len": 250.0,
         "mass": 50.0,
-        "spg_init_l": 90.0,
-        "spg_rate": 20.0,
-        "spg_start_x": -50.0,
-        "spg_start_y": 40.0,
+        "spg_init_l": 30.0,
+        "spg_rate": 1.2,
+        "spg_start_x": 0,
+        "spg_start_y": 50,
         "spg_end_d": 80.0,
         "spg_end_o": 0.0
     },
     "j3": {
+        "mass": 50.0,
         "min": -165.0,
         "def": -90.0,
         "max": 0.0
@@ -23,13 +24,15 @@
         "len": 250.0,
         "offset": 23.5,
         "mass": 50.0,
-        "spg_rate": 20.0,
-        "spg_start_x": 20.0,
+        "spg_init_l": 30.0,
+        "spg_rate": 0.4,
+        "spg_start_x": 0,
         "spg_start_y": 60.0,
         "spg_end_d": 80.0,
-        "spg_end_o": 38.5
+        "spg_end_o": 28
     },
     "j5": {
+        "mass": 50.0,
         "min": -90.0,
         "def": 45.0,
         "max": 90.0
