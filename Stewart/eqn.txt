@@ -1,0 +1,4 @@
+"arm_angle"= 40deg
+"table_radius"= 20mm
+"table_height"= 100mm
+"arm_width"= 7mm

@@ -1,0 +1,5 @@
+﻿"W"= 1700
+"L"= 760
+"H"= 810
+"ARM_BOLT_SPACING"= 166
+"ARM_TO_WALL"= 300
