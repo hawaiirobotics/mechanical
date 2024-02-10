@@ -1,13 +1,5 @@
-<<<<<<< HEAD
 ﻿"W"= 1700
 "L"= 760
 "H"= 810
 "ARM_BOLT_SPACING"= 166
 "ARM_TO_WALL"= 300
-=======
-﻿"W"= 1750
-"L"= 780
-"H"= 780
-"ARM_BOLT_SPACING"= 166
-"ARM_TO_WALL"= 200
->>>>>>> fbc617a917302fa5edc7349d7f8caa84ac05b461
