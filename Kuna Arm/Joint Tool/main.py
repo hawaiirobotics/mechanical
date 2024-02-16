@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
+import pandas as pd
 import signal
 from tqdm import tqdm
 matplotlib.use('TkAgg')
@@ -105,7 +106,8 @@ def spring_moment(td, joint):
 
         s_len = np.linalg.norm([td["j3"]["spg_start_x"] + j3_x - (td["j3"]["spg_end_d"] * np.cos(l34_t) + j3_x - td["j3"]["spg_end_o"] * np.sin(l34_t)),
                             td["j3"]["spg_start_y"] + j3_y - (td["j3"]["spg_end_d"] * np.sin(l34_t) + j3_y + td["j3"]["spg_end_o"] * np.cos(l34_t))])
-
+        if np.shape(s_len) != ():
+            print(np.shape(s_len))
         f34 = np.max([s_len - td["j3"]["spg_init_l"], 0]) * td["j3"]["spg_rate"]
 >>>>>>> fbc617a917302fa5edc7349d7f8caa84ac05b461
         m = rf34 * f34 / 1000 # Convert to Nm
@@ -131,12 +133,15 @@ def calculate_spring_length(td, joint, angle):
     return s_len
 
 
-
 def spring_unfit(td, joint):
-    angs = np.linspace(td[joint]["min"], td[joint]["max"], 500)
+    angs = np.linspace(td[joint]["min"], td[joint]["max"], 50)
     lengths = [calculate_spring_length(td, joint, ang) for ang in angs]
-    return min(lengths) < td[joint]["spg_init_l"] or max(lengths) > td[joint]["spg_init_l"] * 4 # EXTENSION CONSTANT
+    return min(lengths) < td[joint]["spg_init_l"] or max(lengths) > td[joint]["spg_init_l"] * td[joint]["spg_max_ratio"] # EXTENSION CONSTANT
 
+def spring_min_max(td, joint):
+    angs = np.linspace(td[joint]["min"], td[joint]["max"], 50)
+    lengths = [calculate_spring_length(td, joint, ang) for ang in angs]
+    return min(lengths), max(lengths)
 
 
 >>>>>>> fbc617a917302fa5edc7349d7f8caa84ac05b461
@@ -364,72 +369,166 @@ def simulate(td, point=(300, 150), num_points=50, plot=False):
 
 
 
-def optimize(td, joint, sr_range, sl_range, sd_range, y_range, x_range=None, steps=5, plot=False):   
-        j_sr = td["j3"]["spg_rate"]
-        j_sl = td["j3"]["spg_init_l"]
-        j_sd = td["j3"]["spg_end_d"]
-        j_y = td["j3"]["spg_start_y"]
-        j_x = td["j3"]["spg_start_x"]
-
-        sr_values = np.linspace(j_sr - sr_range, j_sr + sr_range, num=steps)
-        sl_values = np.linspace(j_sl - sl_range, j_sl + sl_range, num=steps)
-        sd_values = np.linspace(j_sd - sd_range, j_sd + sd_range, num=steps)
-        y_values = np.linspace(j_y - y_range, j_y + y_range, num=steps)
-        print(y_values)
-        if x_range is not None:
-            x_values = np.linspace(j_x - y_range, j_x + y_range, num=steps)
-        else:
-            x_values = [0]
-
+def optimize(td, joint, springs, sd_values, y_values, x_values=[0], spg_range=None, plot=False):   
         min_mse = float('inf')
-        min_sr, min_sl, min_sd, min_y, min_x = None, None, None, None, None
+        min_spg, min_sd, min_y, min_x = None, None, None, None
 
-        for sr in tqdm(sr_values):
-            for sl in sl_values:
-                for sd in sd_values:
-                    for y in y_values:
-                        for x in x_values:
-                            td[joint]["spg_rate"] = sr
-                            td[joint]["spg_init_l"] = sl
-                            td[joint]["spg_end_d"] = sd
-                            td[joint]["spg_start_y"] = y
-                            td[joint]["spg_start_x"] = x
-                            if spring_unfit(td, joint):
-                                tqdm.write("Spring unfit")
+        for index, spg in tqdm(springs.iterrows()):
+            for sd in sd_values:
+                for y in y_values:
+                    for x in x_values:
+                        td[joint]["spg_rate"] = spg['Rate N/mm']
+                        td[joint]["spg_init_l"] = spg['Lg.']
+                        td[joint]["spg_max_ratio"] = spg['Lg. Max']/spg['Lg.']
+                        td[joint]["spg_end_d"] = sd
+                        td[joint]["spg_start_y"] = y
+                        td[joint]["spg_start_x"] = x
+                        if spg_range is not None:
+                            if spg['Lg.'] < spg_range[joint][sd][y][x][0] or spg['Lg. Max'] > spg_range[joint][sd][y][x][1]:
                                 continue
-                            moments = np.array(simulate(td, num_points=500, plot=plot))
-                            moment_mse = np.mean(moments**2, axis=0).tolist()
-                            tqdm.write(f"SR: {sr}, SL: {sl}, SD: {sd} Y: {y}, X: {x}")
-                            tqdm.write(f"J2 MSE: {moment_mse[0]}" if joint == "j2" else f"J3 MSE: {moment_mse[1]}")
-                            if moment_mse[1] < min_mse:
-                                min_mse = moment_mse[1]
-                                min_sr, min_sl, min_sd, min_y, min_x = sr, sl, sd, y, x
-        td[joint]["spg_rate"] = min_sr
-        td[joint]["spg_init_l"] = min_sl
+                        else:
+                            if spring_unfit(td, joint):
+                                continue
+                        moments = np.array(simulate(td, num_points=500, plot=plot))
+                        moment_mse = np.mean(moments**2, axis=0).tolist()
+
+                        if moment_mse[1] < min_mse:
+                            min_mse = moment_mse[1]
+                            min_spg, min_sd, min_y, min_x = spg['Part Number'], sd, y, x
+        min_spg_data = springs.loc[springs['Part Number'] == min_spg]
+        td[joint]["spg"] = min_spg_data["Part Number"].values[0]
+        td[joint]["spg_rate"] = min_spg_data["Rate N/mm"].values[0]
+        td[joint]["spg_init_l"] = min_spg_data["Lg."].values[0]
         td[joint]["spg_end_d"] = min_sd
         td[joint]["spg_start_y"] = min_y
         td[joint]["spg_start_x"] = min_x
-        print(f"Range of parameters | SR: {sr_values[0]} - {sr_values[-1]}, SL: {sl_values[0]} - {sl_values[-1]}, SD: {sd_values[0]} - {sd_values[-1]}, Y: {y_values[0]} - {y_values[-1]}, X: {x_values[0]} - {x_values[-1]}")
-        print(f"Optimized {joint} parameters | SR: {min_sr}, SL: {min_sl}, SD: {min_sd}, Y: {min_y}, X: {min_x}")
+        print(f"Range of parameters SD: {sd_values[0]} - {sd_values[-1]}, Y: {y_values[0]} - {y_values[-1]}, X: {x_values[0]} - {x_values[-1]}")
+        print(f"Optimized {joint} parameters | Part Number: {td[joint]['spg']} SR: {td[joint]['spg_rate']}, SL: {td[joint]['spg_init_l']}, SD: {min_sd}, Y: {min_y}, X: {min_x}")
         return td, min_mse
+
+
+def load_springs(file_path):
+    df = pd.read_csv(file_path)
+
+    df['Lg. Max'] = pd.to_numeric(df['Lg. Max'], errors='coerce')
+    df['Rate N/mm'] = pd.to_numeric(df['Rate N/mm'], errors='coerce')
+    df['Lg.'] = pd.to_numeric(df['Lg.'], errors='coerce')
+    df['OD'] = pd.to_numeric(df['OD'], errors='coerce')
+
+    return df
+
+
+def filter_springs(df, rate_range, length_range, od_range):
+    filtered_df = df[
+        (df['Rate N/mm'] >= rate_range[0]) & (df['Rate N/mm'] <= rate_range[1]) &
+        (df['Lg.'] >= length_range[0]) & (df['Lg.'] <= length_range[1]) &
+        (df['OD'] >= od_range[0]) & (df['OD'] <= od_range[1])
+    ]
+    
+    sorted_df = filtered_df.sort_values(by='Rate N/mm')
+
+    return sorted_df
+
+def precompute_ranges(td, j3_sd_values, j3_y_values, j2_sd_values, j2_y_values, j2_x_values):
+    t_min_l, t_max_l = float('inf'), 0
+    spg_range = {'j3': {}, 'j2': {}}
+    for sd in j3_sd_values:
+        spg_range['j3'][sd] = {}
+        for y in j3_y_values:
+            spg_range['j3'][sd][y] = {}  # Corrected from spg_range['j2'][sd][y] to spg_range['j3'][sd][y]
+            td['j3']["spg_end_d"] = sd
+            td['j3']["spg_start_y"] = y
+            min_l, max_l = spring_min_max(td, "j3")
+            if min_l < t_min_l:
+                t_min_l = min_l
+            if max_l > t_max_l:
+                t_max_l = max_l
+            spg_range['j3'][sd][y][0] = [min_l, max_l]
+
+    for sd in j2_sd_values:
+        spg_range['j2'][sd] = {}
+        for y in j2_y_values:
+            spg_range['j2'][sd][y] = {}
+            for x in j2_x_values:
+                td['j2']["spg_end_d"] = sd
+                td['j2']["spg_start_y"] = y
+                td['j2']["spg_start_x"] = x
+                min_l, max_l = spring_min_max(td, "j2")
+                if min_l < t_min_l:
+                    t_min_l = min_l
+                if max_l > t_max_l:
+                    t_max_l = max_l
+                spg_range['j2'][sd][y][x] = [min_l, max_l]
+    print(f"Spring length range: {t_min_l} - {t_max_l}")
+    return spg_range, t_min_l, t_max_l
+
+
+def save_json_file(td):
+    optimized_file_name = "optimized_teacher.json"
+    with open(optimized_file_name, 'w') as outfile:
+        json.dump(td, outfile, indent=4)
+
+    print(f"Optimized teacher dictionary saved to {optimized_file_name}")
 
 
 if __name__ == "__main__":
     showplot = True if len(sys.argv) > 2 and sys.argv[2] == "plot" else False
+    PN_search = True if len(sys.argv) > 2 and sys.argv[2] == "search" else False
     if len(sys.argv) > 1:
         file_name = sys.argv[1]
-        teacher_dict = load_json_file(file_name)
+        td = load_json_file(file_name)
 
-        teacher_dict, j3_mse = optimize(teacher_dict, "j3", 0.4, 10, 60, 40, plot=showplot)
-        print(f"J3 MSE: {j3_mse}")
-        simulate(teacher_dict, num_points=50, plot=True)
-        
-        teacher_dict, j2_mse = optimize(teacher_dict, "j2", 0.4, 10, 60, 40, 20, plot=showplot)
-        print(f"J2 MSE: {j2_mse}")
-        simulate(teacher_dict, num_points=50, plot=True)
-        
+        steps = 5
+        sd_range, y_range, x_range = 60, 30, 40
+
+        springs_df = load_springs('mcmaster_springs.csv')
+        print(springs_df)
+        if PN_search: # Search for the best spring part number
+            j3_sd_values = np.linspace(td["j3"]["spg_end_d"] - sd_range, td["j3"]["spg_end_d"] + sd_range, num=steps)
+            j3_y_values = np.linspace(td["j3"]["spg_start_y"] - y_range, td["j3"]["spg_start_y"] + y_range, num=steps)
+            j2_sd_values = np.linspace(td["j2"]["spg_end_d"] - sd_range, td["j2"]["spg_end_d"] + sd_range, num=steps)
+            j2_y_values = np.linspace(td["j2"]["spg_start_y"] - y_range, td["j2"]["spg_start_y"] + y_range, num=steps)
+            j2_x_values = np.linspace(td["j2"]["spg_start_x"] - x_range, td["j2"]["spg_start_x"], num=steps)
+            
+            spg_range, t_min_l, t_max_l = precompute_ranges(td, j3_sd_values, j3_y_values, j2_sd_values, j2_y_values, j2_x_values)
+            
+            rate_n_mm_range = (0.1, 0.5)
+            length_mm_range = (max(t_min_l, 50), t_max_l)
+            od_range = (5, 12)
+            filtered_springs = filter_springs(springs_df, rate_n_mm_range, length_mm_range, od_range)
+
+            td, j3_mse = optimize(td, "j3", filtered_springs, j3_sd_values, j3_y_values, spg_range=spg_range, plot=showplot)
+            print(f"J3 MSE: {j3_mse}")
+            td, j2_mse = optimize(td, "j2", filtered_springs, j2_sd_values, j2_y_values, j2_x_values, spg_range=spg_range, plot=showplot)
+            print(f"J2 MSE: {j2_mse}")
+
+        selected_j3_spring = springs_df[springs_df['Part Number'] == td['j3']['spg']]
+        selected_j2_spring = springs_df[springs_df['Part Number'] == td['j2']['spg']]
+        print(f"Selected J3 Spring: {selected_j3_spring}")
+        print(f"Selected J2 Spring: {selected_j2_spring}")
+
+        td = load_json_file(file_name) # Reload the original file
         
 >>>>>>> fbc617a917302fa5edc7349d7f8caa84ac05b461
+
+        steps = 20
+        j3_sd_values = np.linspace(td["j3"]["spg_end_d"] - sd_range, td["j3"]["spg_end_d"] + sd_range, num=steps)
+        j3_y_values = np.linspace(td["j3"]["spg_start_y"] - y_range, td["j3"]["spg_start_y"] + y_range, num=steps)
+        j2_sd_values = np.linspace(td["j2"]["spg_end_d"] - sd_range, td["j2"]["spg_end_d"] + sd_range, num=steps)
+        j2_y_values = np.linspace(td["j2"]["spg_start_y"] - y_range, td["j2"]["spg_start_y"] + y_range, num=steps)
+        j2_x_values = np.linspace(td["j2"]["spg_start_x"] - x_range, td["j2"]["spg_start_x"], num=steps)
+
+        td, j3_mse = optimize(td, "j3", selected_j3_spring, j3_sd_values, j3_y_values, plot=showplot)
+        print(f"Reoptimized J3 MSE: {j3_mse}")
+
+        td, j2_mse = optimize(td, "j2", selected_j2_spring, j2_sd_values, j2_y_values, j2_x_values, plot=showplot)
+        print(f"Reoptimized J2 MSE: {j2_mse}")
+
+        simulate(td, num_points=50, plot=True)
+        print(f"Optimized j3 Mounting: SD: {td['j3']['spg_end_d']}, Y: {td['j3']['spg_start_y']}")
+        print(f"Optimized j2 Mounting: SD: {td['j2']['spg_end_d']}, Y: {td['j2']['spg_start_y']} X: {td['j2']['spg_start_x']}")
+
+        save_json_file(td)
 
     else:
         print("Please provide a file name as a command-line argument.")
